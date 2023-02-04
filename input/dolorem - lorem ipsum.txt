@@ -1,0 +1,68 @@
+Dolorem - Lorem Ipsum
+
+[Info]
+Capo: 5
+don't try to play this ;)
+
+   Csus2             Dsus4             Emaj7             Faug
+e|-----------------|-----------4/5---|-----------------|--------------14-|
+B|--------------5--|-----------------|--------------5--|-----------13----|
+G|-----------4-----|-----------4/5---|-----------4-----|--------12----14-|
+D|--------3-----5--|-----2h3---------|--------3-----5--|-----11----13----|
+A|-----2-----4-----|--1--------------|-----2-----4-----|--10-------------|
+E|--1--------------|-----------------|--1--------------|-----------------|
+    Lorem             ipsum             dolor    sit      amet
+
+[Intro]
+Csus2  Dsus4 | Emaj7  Faug
+
+[Verse]
+Em                          Am                              D
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+Em                  G                   Em              G
+consequat vel illum   dolore eu feugiat nulla facilisis at vero
+Em                          Am                         D
+  eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril
+Em                 G                   Em              G
+delenit augue duis   dolore te feugait nulla facilisi.
+Em                 G                   Em              G
+delenit augue duis   dolore te feugait nulla facilisi.
+
+[Chorus]
+Csus2          Dsus4
+Lorem ipsum |: dolor sit amet :|
+Emaj7       Faug
+consectetur adipisici elit,
+Csus2       Dsus4
+sed eiusmod tempor incidunt
+Emaj7        Faug
+ut labore et dolore magna aliqua.
+
+[Instrumental]
+|: C  D | E  F :|: A  B | C  D :|
+
+[Verse]
+Em                          Am                              D
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+Em                  G                   Em              G
+consequat vel illum   dolore eu feugiat nulla facilisis at vero
+Em                          Am                         D
+  eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril
+Em                 G                   Em              G
+delenit augue duis   dolore te feugait nulla facilisi.
+Em                 G                   Em              G
+delenit augue duis   dolore te feugait nulla facilisi.
+
+[Bridge] x2
+Eb               Db                   G#           C#
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+
+[Chorus]
+Csus2          Dsus4
+Lorem ipsum |: dolor sit amet :|
+Emaj7       Faug
+consectetur adipisici elit,
+Csus2       Dsus4
+sed eiusmod tempor incidunt
+Emaj7        Faug
+ut labore et dolore magna aliqua.

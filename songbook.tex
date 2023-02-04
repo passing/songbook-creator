@@ -1,0 +1,109 @@
+\documentclass{scrartcl}
+\usepackage[a4paper, left=2.5cm, right=1cm, top=0.5cm, bottom=0.5cm]{geometry}
+
+\usepackage{fontspec}
+\setmainfont{XCharter}
+\setkomafont{sectioning}{\bfseries}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\setotherlanguages{german}
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{imakeidx}
+\makeindex[program=xindy, options=-C utf8, name=interprets, title=Interprets]
+\makeindex[program=xindy, options=-C utf8, name=titles, title=Titles]
+
+\usepackage[hidelinks,unicode]{hyperref}
+\hypersetup{
+    pdftitle={Songbook},
+    pdfcreator={https://github.com/passing/songbook-creator}
+}
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=0cm}
+
+\renewcommand*{\pagemark}{}
+
+\newcommand{\versebreak}{\\}
+\newcommand{\tabformat}{\tiny}
+\newcommand{\tabruleformat}{\color{lightgray}}
+\newcommand{\tabnoteformat}{\bfseries{}\color{NavyBlue}}
+\newcommand{\tabotherformat}{\color{black}}
+\newcommand{\tabchordformat}{\tiny\bfseries{}\color{NavyBlue}}
+\newlength{\tabcellwidth}
+\setlength{\tabcellwidth}{1.0mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{leadsheets}
+
+\setleadsheets{
+    title-template=custom,
+    align-chords={l},
+    after-song=\clearpage,
+    verse/numbered=true,
+    verses-label-format=\color{Gray},
+    info/format=\small\color{Gray},
+    bar-shortcuts=false,
+}
+
+\setchords{
+    input-notation=english,
+    output-notation=english,
+    format=\small\bfseries{}\color{NavyBlue},
+}
+
+\definesongproperty{pdf-title}
+\definesongproperty{pdf-interpret}
+
+\copysongproperty{sort-interpret}{pdf-interpret}
+\copysongproperty{sort-title}{pdf-title}
+
+\definesongtitletemplate{custom}{
+    \section[\texorpdfstring
+        {\songproperty{sort-interpret} - \songproperty{sort-title}}
+        {\songproperty{pdf-interpret} - \songproperty{pdf-title}}
+    ]{\songproperty{interpret} -- \songproperty{title}}
+    \index[interprets]{\songproperty{sort-interpret}}
+    \index[titles]{\songproperty{sort-title} (\songproperty{interpret})}
+}
+
+\makeatletter
+\defineversetypetemplate{itemize}
+  {%
+    \itemize
+      \@itemdepth=0
+      \item[{\verselabel}]%
+  }
+  {\enditemize\penalty-9900}
+\makeatother
+
+\newversetype{prechorus}[name=Prechorus]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setcounter{secnumdepth}{0}
+\raggedbottom
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+\vspace* {\fill}
+{\Huge \textbf{Songbook}} \\
+\vspace* {\fill}
+created with Songbook-Creator \\
+{\small{\href{https://github.com/passing/songbook-creator}{https://github.com/passing/songbook-creator}}}
+\end{center}
+\end{titlepage}
+
+\setcounter{page}{1}
+
+\input{songs}
+
+\printindex[interprets]
+\printindex[titles]
+
+\end{document}
