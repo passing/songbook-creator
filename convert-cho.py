@@ -29,18 +29,18 @@ pattern_translate_bars = re.compile("|".join(re.escape(key) for key in translate
 
 
 # pattern for splitting a line into words
-pattern_non_whitespace = re.compile("\S+")
+pattern_non_whitespace = re.compile(r"\S+")
 
 # chord components
 pattern_chord_root = "[A-Ha-h][#b]?m?"
 pattern_chord_quality = "(?:[0245679]|11|aug|[6]?add(?:2|4|9|11)?|maj(?:7|9|11)(?:sus[24])?|[67]?sus[24]?|dim|\\+|\\*|ø)?"
-pattern_chord_bass = "(?:\/(?:[A-H][#b]?|9))?"
+pattern_chord_bass = r"(?:\/(?:[A-H][#b]?|9))?"
 pattern_chord_appendix = "[*]*"
-pattern_chord_no = "NC|N/C|N\.C\."
+pattern_chord_no = r"NC|N/C|N\.C\."
 pattern_chord_full = f"{pattern_chord_root}{pattern_chord_quality}{pattern_chord_bass}{pattern_chord_appendix}|{pattern_chord_no}"
 
 # chord with or without brackets
-pattern_chord = re.compile(f"(?P<b>\()?(?:{pattern_chord_full})(?(b)\))")
+pattern_chord = re.compile(fr"(?P<b>\()?(?:{pattern_chord_full})(?(b)\))")
 
 # chordline marks
 pattern_chordline_mark = re.compile(f"[-.'/]+")
@@ -58,16 +58,16 @@ pattern_capo = re.compile("(?:Capo:|tune)")
 pattern_capo_extract = re.compile("^Capo: (?P<capo>[0-9])")
 
 # pattern for repetitions written next to the part header ("2x", "x3", "(4x)", "[x5]", ...)
-pattern_repetition = "(?P<sb>\[)?(?P<rb>\()?(?P<x>x)?(?P<repeat>[0-9])(?(x)|x):?(?(rb)\))(?(sb)\])"
+pattern_repetition = r"(?P<sb>\[)?(?P<rb>\()?(?P<x>x)?(?P<repeat>[0-9])(?(x)|x):?(?(rb)\))(?(sb)\])"
 
 # pattern for part header ("[Chorus]", "[Verse 1]", ...) with optional repetition information
-pattern_part_header = re.compile(f"(?P<all>\[(?P<name>[^][:]+)\])\s*(?:{pattern_repetition})?\s*")
+pattern_part_header = re.compile(fr"(?P<all>\[(?P<name>[^][:]+)\])\s*(?:{pattern_repetition})?\s*")
 
 patterns_part_synonyms = {
-    "verse": re.compile("verse( ?[0-9]|\*)?", re.IGNORECASE),
-    "chorus": re.compile("(chorus\*?|part|refrain)( ?[0-9])?", re.IGNORECASE),
+    "verse": re.compile(r"verse( ?[0-9]|\*)?", re.IGNORECASE),
+    "chorus": re.compile(r"(chorus\*?|part|refrain)( ?[0-9])?", re.IGNORECASE),
     "intro": re.compile("intro", re.IGNORECASE),
-    "noname": re.compile("interlude\*", re.IGNORECASE),
+    "noname": re.compile(r"interlude\*", re.IGNORECASE),
     "interlude": re.compile("interlude|fill|instrumental|organ|harmonica|piano", re.IGNORECASE),
     "solo": re.compile("solo", re.IGNORECASE),
     "bridge": re.compile("bridge( ?[0-9])?|bridge/solo", re.IGNORECASE),
@@ -81,11 +81,11 @@ versetype_default = "verse"
 # verse parts
 #versebreak = " \\versebreak"
 
-pattern_text_comment = re.compile(f"^\((?P<text>.*)\)$")
+pattern_text_comment = re.compile(r"^\((?P<text>.*)\)$")
 
 # tab parts
 # identify a tab line
-pattern_tab = re.compile("(?:\|-|-----|-\|)")
+pattern_tab = re.compile(r"(?:\|-|-----|-\|)")
 
 # info parts
 pattern_info_chord_description = re.compile(f"(?P<description>[Xx0-9]{{6}})")
@@ -456,12 +456,12 @@ class song_part:
         raise NotImplemented
 
     def format_chord(self, chord: str, text: str = "") -> str:
-        return "[{}]{}".format(self.clean_post_chord(chord), self.format_text(text, bar_replace=True))
+        return "[{}]{}".format(self.clean_post_chord(chord), self.format_text(text))
 
     def format_chord_sep(self, sep: str) -> str:
         return "[*{}]".format(sep)
 
-    def format_text(self, text: str, bar_replace: bool = False) -> str:
+    def format_text(self, text: str) -> str:
         text = multi_replace(text, pattern_translate_text, translate_text)
 
         if (m := re.match(pattern_text_comment, text)):
@@ -524,7 +524,7 @@ class verse_part(song_part):
         chord_list = line_chords.word_list
 
         # text prior to first chord
-        converted = format(self.format_text(line_text[0 : chord_list[0][1]], bar_replace=True))
+        converted = format(self.format_text(line_text[0 : chord_list[0][1]]))
 
         for c, (chord, chord_pos, _) in enumerate(chord_list):
 
@@ -557,7 +557,7 @@ class verse_part(song_part):
         return chordpro_lines([self.clean_output_line(converted)])
 
     def convert_text(self, line: chordsheet_line) -> chordpro_lines:
-        converted = self.format_text(line, bar_replace=True)
+        converted = self.format_text(line)
         return chordpro_lines([self.clean_output_line(converted)])
 
     def merge_repeating_lines(self):
@@ -640,7 +640,7 @@ class info_part(song_part):
     def format_info_chord(self, match: re.Match) -> str:
         return "{}: {}".format(self.format_chord(match.group("chord")), match.group("description"))
 
-    def format_info_text(self, text: str, bar_replace: bool = False) -> str:
+    def format_info_text(self, text: str) -> str:
         text = multi_replace(text, pattern_translate_text, translate_text)
 
         if (m := re.match(pattern_text_comment, text)):
