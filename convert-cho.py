@@ -40,7 +40,7 @@ pattern_chord_no = r"NC|N/C|N\.C\."
 pattern_chord_full = f"{pattern_chord_root}{pattern_chord_quality}{pattern_chord_bass}{pattern_chord_appendix}|{pattern_chord_no}"
 
 # chord with or without brackets
-pattern_chord = re.compile(fr"(?P<b>\()?(?:{pattern_chord_full})(?(b)\))")
+pattern_chord = re.compile(rf"(?P<b>\()?(?:{pattern_chord_full})(?(b)\))")
 
 # chordline marks
 pattern_chordline_mark = re.compile(f"[-.'/]+")
@@ -61,7 +61,7 @@ pattern_capo_extract = re.compile("^Capo: (?P<capo>[0-9])")
 pattern_repetition = r"(?P<sb>\[)?(?P<rb>\()?(?P<x>x)?(?P<repeat>[0-9])(?(x)|x):?(?(rb)\))(?(sb)\])"
 
 # pattern for part header ("[Chorus]", "[Verse 1]", ...) with optional repetition information
-pattern_part_header = re.compile(fr"(?P<all>\[(?P<name>[^][:]+)\])\s*(?:{pattern_repetition})?\s*")
+pattern_part_header = re.compile(rf"(?P<all>\[(?P<name>[^][:]+)\])\s*(?:{pattern_repetition})?\s*")
 
 patterns_part_synonyms = {
     "verse": re.compile(r"verse( ?[0-9]|\*)?", re.IGNORECASE),
@@ -77,9 +77,6 @@ patterns_part_synonyms = {
 }
 
 versetype_default = "verse"
-
-# verse parts
-#versebreak = " \\versebreak"
 
 pattern_text_comment = re.compile(r"^\((?P<text>.*)\)$")
 
@@ -187,7 +184,7 @@ class chordpro_lines:
 
         if self.rep > 1:
             raise ValueError
-        
+
         return result
 
 
@@ -264,8 +261,7 @@ class song:
 
         if "artist" in self.metadata.keys():
             if m := re.search("^(.*), (The|Die)", self.metadata["artist"]):
-                self.metadata["artist"] = f"{m[2]} {m[1]}"            
-
+                self.metadata["artist"] = f"{m[2]} {m[1]}"
 
     def skip_empty_lines(self, lines: list[chordsheet_line]):
         while lines and lines[0].type == "empty":
@@ -286,7 +282,7 @@ class song:
             logging.info("extracting info part")
 
             # create metadata for capo
-            if (m := pattern_capo_extract.match(lines[0])):
+            if m := pattern_capo_extract.match(lines[0]):
                 self.metadata["capo"] = m.group("capo")
 
         for l, line in enumerate(lines):
@@ -403,7 +399,7 @@ class song_part:
             return object.__new__(verse_part)
 
     def __init__(self, versetype: str, label: str, src: list[chordsheet_line], lines: list[chordsheet_line], rep: int = 1):
-        self.versetype = versetype 
+        self.versetype = versetype
         self.label = label
         self.chordsheet_src = src
         self.chordsheet_lines = lines
@@ -464,8 +460,8 @@ class song_part:
     def format_text(self, text: str) -> str:
         text = multi_replace(text, pattern_translate_text, translate_text)
 
-        if (m := re.match(pattern_text_comment, text)):
-            return("{{comment: {}}}".format(m.group("text")))
+        if m := re.match(pattern_text_comment, text):
+            return "{{comment: {}}}".format(m.group("text"))
 
         return text
 
@@ -479,7 +475,7 @@ class song_part:
 class verse_part(song_part):
     def __init__(self, versetype: str, label: str, src: list[chordsheet_line], lines: list[chordsheet_line], rep: int = 1):
         super().__init__(versetype, label, src, lines, rep)
-        #self.merge_repeating_lines()
+        # self.merge_repeating_lines()
 
     def get_versetype(self, is_first: bool, is_last: bool, default: str) -> str:
         if self.versetype is not None:
@@ -545,7 +541,7 @@ class verse_part(song_part):
     def convert_chords(self, line: chordsheet_line) -> chordpro_lines:
         converted = ""
 
-        for (word, _, word_is_chord) in line.word_list:
+        for word, _, word_is_chord in line.word_list:
 
             if word_is_chord:
                 converted += self.format_chord(word)
@@ -639,11 +635,11 @@ class info_part(song_part):
         return "{}: {}".format(self.format_chord(match.group("chord")), match.group("description"))
 
     def format_info_text(self, text: str) -> str:
-        if (m := re.match(pattern_text_comment, text)):
-            return("{{comment: {}}}".format(m.group("text")))
+        if m := re.match(pattern_text_comment, text):
+            return "{{comment: {}}}".format(m.group("text"))
         else:
-            return("{{comment: {}}}".format(text))
-        
+            return "{{comment: {}}}".format(text)
+
 
 def convert_file(filename_input: str, filename_output: str) -> bool:
     logging.info("converting '{}' to '{}'".format(filename_input, filename_output))
