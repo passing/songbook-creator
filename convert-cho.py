@@ -670,15 +670,9 @@ def write_file(filename: str, lines: list[str]):
 
 
 def main():
-    song_list = []
-
     for filename_input in sys.argv[1:]:
         filename_output = "songs/{}.cho".format(basename(filename_input))
-
-        if convert_file(filename_input, filename_output):
-            song_list.append("\\input{{{}}}".format(filename_output))
-
-    write_file("songs.tex", song_list)
+        convert_file(filename_input, filename_output)
 
 
 if __name__ == "__main__":
