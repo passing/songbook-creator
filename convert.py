@@ -28,18 +28,18 @@ pattern_translate_bars = re.compile("|".join(re.escape(key) for key in translate
 
 
 # pattern for splitting a line into words
-pattern_non_whitespace = re.compile("\S+")
+pattern_non_whitespace = re.compile(r"\S+")
 
 # chord components
 pattern_chord_root = "[A-Ha-h][#b]?m?"
 pattern_chord_quality = "(?:[0245679]|11|aug|[6]?add(?:2|4|9|11)?|maj(?:7|9|11)(?:sus[24])?|[67]?sus[24]?|dim|\\+|\\*|ø)?"
-pattern_chord_bass = "(?:\/(?:[A-H][#b]?|9))?"
+pattern_chord_bass = r"(?:\/(?:[A-H][#b]?|9))?"
 pattern_chord_appendix = "[*]*"
-pattern_chord_no = "NC|N/C|N\.C\."
+pattern_chord_no = r"NC|N/C|N\.C\."
 pattern_chord_full = f"{pattern_chord_root}{pattern_chord_quality}{pattern_chord_bass}{pattern_chord_appendix}|{pattern_chord_no}"
 
 # chord with or without brackets
-pattern_chord = re.compile(f"(?P<b>\()?(?:{pattern_chord_full})(?(b)\))")
+pattern_chord = re.compile(fr"(?P<b>\()?(?:{pattern_chord_full})(?(b)\))")
 
 # chordline marks
 pattern_chordline_mark = re.compile(f"[-.'/]+")
@@ -55,16 +55,16 @@ pattern_metadata_line = re.compile("(?P<interpret>.+) - (?P<title>.+)")
 pattern_capo = re.compile("(?:Capo:|tune)")
 
 # pattern for repetitions written next to the part header ("2x", "x3", "(4x)", "[x5]", ...)
-pattern_repetition = "(?P<sb>\[)?(?P<rb>\()?(?P<x>x)?(?P<repeat>[0-9])(?(x)|x):?(?(rb)\))(?(sb)\])"
+pattern_repetition = r"(?P<sb>\[)?(?P<rb>\()?(?P<x>x)?(?P<repeat>[0-9])(?(x)|x):?(?(rb)\))(?(sb)\])"
 
 # pattern for part header ("[Chorus]", "[Verse 1]", ...) with optional repetition information
-pattern_part_header = re.compile(f"(?P<all>\[(?P<name>[^][:]+)\])\s*(?:{pattern_repetition})?\s*")
+pattern_part_header = re.compile(fr"(?P<all>\[(?P<name>[^][:]+)\])\s*(?:{pattern_repetition})?\s*")
 
 patterns_part_synonyms = {
     "verse": re.compile("verse( ?[0-9])?", re.IGNORECASE),
-    "verse*": re.compile("(verse|interlude)\*", re.IGNORECASE),
+    "verse*": re.compile(r"(verse|interlude)\*", re.IGNORECASE),
     "chorus": re.compile("(chorus|part|refrain)( ?[0-9])?", re.IGNORECASE),
-    "chorus*": re.compile("chorus\*", re.IGNORECASE),
+    "chorus*": re.compile(r"chorus\*", re.IGNORECASE),
     "intro": re.compile("intro", re.IGNORECASE),
     "interlude": re.compile("interlude|fill|instrumental|organ|harmonica|piano", re.IGNORECASE),
     "solo": re.compile("solo", re.IGNORECASE),
@@ -81,7 +81,7 @@ versebreak = " \\versebreak"
 
 # tab parts
 # identify a tab line
-pattern_tab = re.compile("(?:\|-|-----|-\|)")
+pattern_tab = re.compile(r"(?:\|-|-----|-\|)")
 
 pattern_tab_dashes = re.compile("-+")
 pattern_tab_notes = re.compile("[^-|:~ ]+")
@@ -371,7 +371,7 @@ class song:
     def merge_repeating_parts(self):
         p = 0
         while p < len(self.song_parts) - 1:
-            if self.song_parts[p] == self.song_parts[p + 1]:
+            if self.song_parts[p] == self.song_parts[p + 1] and len(self.song_parts[p].chordpro_lines) > 0:
                 logging.debug("found repeating parts")
                 self.song_parts[p].chordsheet_src.append("")
                 self.song_parts[p].chordsheet_src.extend(self.song_parts[p + 1].chordsheet_src)
@@ -745,11 +745,11 @@ class info_part(song_part):
 
     def convert_info_line(self, text: chordsheet_line) -> str:
         converted = self.format_text(text)
-        converted = pattern_info_chord.sub(self.format_chord, converted)
+        converted = pattern_info_chord.sub(self.format_info_chord, converted)
         converted = pattern_info_chord_description.sub(self.format_chord_description, converted)
         return converted
 
-    def format_chord(self, match: re.Match) -> str:
+    def format_info_chord(self, match: re.Match) -> str:
         return "{}: {}".format(self.format_writechord(match.group("chord")), match.group("description"))
 
     def format_chord_description(self, match: re.Match) -> str:
