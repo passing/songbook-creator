@@ -610,8 +610,6 @@ class tab_part(song_part):
 
 class info_part(song_part):
     def export(self, is_first: bool = False, is_last: bool = False) -> list[str]:
-        verse_type = self.get_versetype(is_first, is_last, versetype_default)
-
         result = []
         for line in self.chordsheet_src:
             result.append(f"# {line}")
@@ -641,8 +639,6 @@ class info_part(song_part):
         return "{}: {}".format(self.format_chord(match.group("chord")), match.group("description"))
 
     def format_info_text(self, text: str) -> str:
-        text = multi_replace(text, pattern_translate_text, translate_text)
-
         if (m := re.match(pattern_text_comment, text)):
             return("{{comment: {}}}".format(m.group("text")))
         else:
